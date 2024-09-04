@@ -1,0 +1,41 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Users</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="title">
+        <h4>Friend List</h4>
+    </div>
+    <div class="categories">
+        <div class="gender">
+            <label>Gender:</label>
+            <select id="genderFilter">
+                <option value="all">All</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+            </select>
+        </div>
+        <div class="location">
+            <label>Country:</label>
+            <select id="countryFilter">
+                <option value="all">All</option>
+            </select>
+
+        </div>
+        <button id="showUser" class="showFriendsBtn">
+            <!-- <a href="./index.html"> -->
+            Back to main manu
+            <!-- </a> -->
+        </button>
+    </div>
+    <div id="friendList" class="user-list"></div>
+    <script src="friend.js"></script>
+    <script src="navigation.js"></script>
+</body>
+
+</html>

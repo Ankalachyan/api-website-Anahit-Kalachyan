@@ -45,77 +45,75 @@ async function updateFriendsList() {
         console.error('Element with ID "friendList" not found.');
         return;
     }
-    friendListElement.innerHTML = ''; 
+    friendListElement.innerHTML = '';
+    const userKeys = Object.keys(localStorage).filter(key => key.startsWith('user_'));
 
-    Object.keys(localStorage).forEach(key => {
-        if (key.startsWith('user_')) {
-            const user = JSON.parse(localStorage.getItem(key));
-            if (!user) {
-                console.error(`User data for key ${key} is not valid.`);
-                return;
-            }
-
-            const userCard = document.createElement('div');
-            userCard.className = 'userCard';
-            userCard.innerHTML = `
-                <img src="${user.picture.medium}" alt="${user.name.first} ${user.name.last}">
-                <div class="userText">
-                    <p class="userName">${user.name.first} ${user.name.last}</p>
-                    <p class="userEmail">${user.email}</p>
-                </div>
-                <div class="endPart">
-                    <div class="friendIcons">
-                        <div class="remove">
-                            <svg fill="#000000" width="33px" height="33px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M2,21h8a1,1,0,0,0,0-2H3.071A7.011,7.011,0,0,1,10,13a5.044,5.044,0,1,0-3.377-1.337A9.01,9.01,0,0,0,1,20,1,1,0,0,0,2,21ZM10,5A3,3,0,1,1,7,8,3,3,0,0,1,10,5ZM23,16a1,1,0,0,1-1,1H15a1,1,0,0,1,0-2h7A1,1,0,0,1,23,16Z" />
-                            </svg>
-                        </div>
-                    </div>
-                    <button class="detailsBtn">Details</button>
-                </div>
-            `;
-
-            const detailsButton = userCard.querySelector('.detailsBtn');
-            if (detailsButton) {
-                detailsButton.addEventListener('click', () => showUserDetails(user));
-            }
-
-            const removeButton = userCard.querySelector('.remove');
-            if (removeButton) {
-                removeButton.addEventListener('click', () => remove(user));
-            }
-
-            friendListElement.appendChild(userCard);
+    if (userKeys.length === 0) {
+        const noFriendsMessage = document.createElement('p');
+        noFriendsMessage.className = "noFriend"
+        noFriendsMessage.textContent = 'There are no friends currently.';
+        friendListElement.appendChild(noFriendsMessage);
+        return;
+    }
+    userKeys.forEach(key => {
+        const user = JSON.parse(localStorage.getItem(key));
+        if (!user) {
+            console.error(`User data for key ${key} is not valid.`);
+            return;
         }
+
+        const userCard = document.createElement('div');
+        userCard.className = 'userCard';
+        userCard.innerHTML = `
+            <img src="${user.picture.medium}" alt="${user.name.first} ${user.name.last}">
+            <div class="userText">
+                <p class="userName">${user.name.first} ${user.name.last}</p>
+                <p class="userEmail">${user.email}</p>
+            </div>
+            <div class="endPart">
+                <div class="friendIcons">
+                    <div class="remove">
+                        <svg fill="#000000" width="33px" height="33px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M2,21h8a1,1,0,0,0,0-2H3.071A7.011,7.011,0,0,1,10,13a5.044,5.044,0,1,0-3.377-1.337A9.01,9.01,0,0,0,1,20,1,1,0,0,0,2,21ZM10,5A3,3,0,1,1,7,8,3,3,0,0,1,10,5ZM23,16a1,1,0,0,1-1,1H15a1,1,0,0,1,0-2h7A1,1,0,0,1,23,16Z" />
+                        </svg>
+                    </div>
+                </div>
+                <button class="detailsBtn">Details</button>
+            </div>
+        `;
+
+        const detailsButton = userCard.querySelector('.detailsBtn');
+        detailsButton.addEventListener('click', () => showUserDetails(user));
+
+        const removeButton = userCard.querySelector('.remove');
+        removeButton.addEventListener('click', () => {
+            localStorage.removeItem(key);
+            updateFriendsList();
+        });
+
+        friendListElement.appendChild(userCard);
     });
 }
 
-async function remove(user) {
+
+function remove(user) {
     console.log('Remove user:', user);
 
     const userKey = `user_${user.email}`;
     localStorage.removeItem(userKey);
-
-    await updateFriendsList();
+    updateFriendsList();
 }
 
-async function fetchData() {
-    try {
-        const response = await fetch("https://randomuser.me/api/?results=50");
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
+fetch("https://randomuser.me/api/?results=50")
+    .then(response => response.json())
+    .then(data => {
         allUsers = data.results;
         allUsers.forEach(user => countries.add(user.location.country));
         populateCountryFilter();
-        await updateFriendsList();
+        updateFriendsList();
         document.getElementById('genderFilter').addEventListener('change', filterUsers);
         document.getElementById('countryFilter').addEventListener('change', filterUsers);
-    } catch (error) {
+    })
+    .catch(error => {
         console.error('Error:', error);
-    }
-}
-
-// Start the data fetching process
-fetchData();
+    });

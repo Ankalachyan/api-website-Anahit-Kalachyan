@@ -1,31 +1,9 @@
 let allUsers = [];
 let countries = new Set();
 
-async function fetchUsers() {
-    try {
-        const response = await fetch("https://randomuser.me/api/?results=50");
-        const data = await response.json();
-        allUsers = data.results;
-        allUsers.forEach(user => countries.add(user.location.country));
-        populateCountryFilter();
-        renderUsers(allUsers);
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
-
 function renderUsers(users) {
-
-
     const userListElement = document.getElementById('userList');
     userListElement.innerHTML = '';
-
-    if (users.length === 0) {
-        userListElement.innerHTML = '<p>No users found.</p>';
-        return;
-    }
-
-
     users.forEach(user => {
         const userCard = document.createElement('div');
         userCard.className = 'userCard';
@@ -57,11 +35,8 @@ function renderUsers(users) {
         detailsButton.addEventListener('click', () => showUserDetails(user));
 
         const addButton = userCard.querySelector('.add');
-        addButton.addEventListener('click', async () => {
-            await add(user);
-        });
+        addButton.addEventListener('click', () => add(user));
 
-        const svgElement = addButton.querySelector('svg');
         userListElement.appendChild(userCard);
     });
 }
@@ -101,11 +76,21 @@ function add(user) {
     console.log('Add user:', user);
     const userKey = `user_${user.email}`;
     localStorage.setItem(userKey, JSON.stringify(user));
+    alert(`
+        Friend Added!
+    `);
     updateFriendsList();
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-    fetchUsers();
-    document.getElementById('genderFilter').addEventListener('change', filterUsers);
-    document.getElementById('countryFilter').addEventListener('change', filterUsers);
-});
+fetch("https://randomuser.me/api/?results=50")
+    .then(response => response.json())
+    .then(data => {
+        allUsers = data.results;
+        allUsers.forEach(user => countries.add(user.location.country));
+        populateCountryFilter();
+        renderUsers(allUsers);
+        document.getElementById('genderFilter').addEventListener('change', filterUsers);
+        document.getElementById('countryFilter').addEventListener('change', filterUsers);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });

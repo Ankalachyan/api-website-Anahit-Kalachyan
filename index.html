@@ -10,23 +10,23 @@
     <div class="title">
         <h4>User List</h4>
     </div>
-    <div class="categories">
-        <div class="gender">
-            <label for="genderFilter">Gender:</label>
-            <select id="genderFilter">
-                <option value="all">All</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-            </select>
+        <div class="categories">
+            <div class="gender">
+                <label for="genderFilter">Gender</label>
+                <select id="genderFilter">
+                    <option value="all">All</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+            </div>
+            <div class="location">
+                <label for="countryFilter">Country</label>
+                <select id="countryFilter">
+                    <option value="all">All</option>
+                </select>
+            </div>
+            <button id="showFriendsBtn" class="btn">Show My Friend List</button>
         </div>
-        <div class="location">
-            <label for="countryFilter">Country:</label>
-            <select id="countryFilter">
-                <option value="all">All</option>
-            </select>
-        </div>
-        <button id="showFriendsBtn" class="showFriendsBtn">Show My Friend List</button>
-    </div>
     <div id="userList" class="user-list"></div>
     <script src="script.js"></script>
     <script src="navigation.js"></script>
